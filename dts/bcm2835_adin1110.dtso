@@ -1,0 +1,63 @@
+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
+/*
+ * bcm2835_adin1110.dtso - Device Tree Overlay file for ADIN1110
+ *
+ * Copyright 2022 OKS-Tech Japan Co.,Ltd
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+        compatible = "brcm,bcm2835";
+
+        fragment@0 {
+                target = <&spidev0>;
+                __overlay__ {
+                        status = "disabled";
+                };
+        };
+
+        fragment@1 {
+                target = <&gpio>;
+                __overlay__ {
+                        cs_pin_adin1110: cs_pin_adin1110 {
+                                brcm,pins = <25>;
+                                brcm,function = <0>;
+                                brcm,pull = <0>;
+                        };
+                };
+        };
+
+        fragment@2 {
+                target = <&spi0>;
+                __overlay__ {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+                        status = "okay";
+
+                        ethernet@0{
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+
+                                compatible = "adi,adin1110";
+                                reg = <0>;
+                                pinctrl-names = "default";
+                                pinctrl-0 = <&cs_pin_adin1110>;
+                                interrupt-parent = <&gpio>;
+                                interrupts = <25 2>;
+                                spi-max-frequency = <25000000>;
+                                adi,spi-crc;
+                                mac-address = [ CA 2F B7 10 23 63 ];
+
+                                status = "okay";
+                                phy@0 {
+                                        compatible = "ethernet-phy-id0283.bc91";
+                                        reg = <0>;
+                                };
+                        };
+                };
+        };
+
+};
+
