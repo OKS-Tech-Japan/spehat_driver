@@ -23,6 +23,7 @@
 #include <linux/phy.h>
 #include <linux/property.h>
 #include <linux/spi/spi.h>
+#include <linux/version.h>
 
 #include <net/switchdev.h>
 
@@ -141,7 +142,6 @@ struct adin1110_cfg {
 struct adin1110_port_priv {
 	struct adin1110_priv		*priv;
 	struct net_device		*netdev;
-//	struct net_device		*bridge;
 	struct phy_device		*phydev;
 	struct work_struct		tx_work;
 	u64				rx_packets;
@@ -777,7 +777,7 @@ static int adin1110_set_mac_address(struct net_device *netdev,
 	if (!is_valid_ether_addr(dev_addr))
 		return -EADDRNOTAVAIL;
 
-	ether_addr_copy(netdev->dev_addr, dev_addr);
+	eth_hw_addr_set(netdev, dev_addr);
 	memset(mask, 0xFF, ETH_ALEN);
 
 	mac_slot = (!port_priv->nr) ?  ADIN_MAC_P1_ADDR_SLOT : ADIN_MAC_P2_ADDR_SLOT;
@@ -1126,6 +1126,9 @@ static int adin1110_probe_netdevs(struct adin1110_priv *priv)
 	struct net_device *netdev;
 	int ret;
 	int i;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 16, 0)
+	u8 mac_addr[ETH_ALEN];
+#endif
 
 	for (i = 0; i < priv->cfg->ports_nr; i++) {
 		netdev = devm_alloc_etherdev(dev, sizeof(*port_priv));
@@ -1140,8 +1143,19 @@ static int adin1110_probe_netdevs(struct adin1110_priv *priv)
 		priv->ports[i] = port_priv;
 		SET_NETDEV_DEV(netdev, dev);
 
-		if (!device_get_mac_address(dev, netdev->dev_addr, ETH_ALEN))
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0)
+		if (!device_get_mac_address(dev, netdev->dev_addr, ETH_ALEN)) {
+			pr_info("MAC addr was not set, use random MAC\n");
 			eth_hw_addr_random(netdev);
+		}
+#else
+		if (!device_get_mac_address(dev, mac_addr)) {
+			eth_hw_addr_set(netdev, mac_addr);
+		} else {
+			pr_info("MAC addr was not set, use random MAC\n");
+			eth_hw_addr_random(netdev);
+		}
+#endif
 
 		netdev->irq = priv->spidev->irq;
 		INIT_WORK(&port_priv->tx_work, adin1110_tx_work);
