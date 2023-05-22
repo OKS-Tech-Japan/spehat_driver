@@ -14,7 +14,7 @@ SPE HATは弊社OKS-TECHが開発した、Raspberry Pi用10BASE-T1Lボードで�
 10BASE-T1L(IEEE 802.3cg-2019)は従来からあるRS485等のフィールドネットワークを置き換える新しい規格で、 全ての産業用ネットワークをEthernet化することができるようになります。また規格上の伝送距離は1000mで、10Mbpsの伝送速度と52Wまでの電力供給をサポートしています。 本質安全防爆にも規格レベルで対応しており、将来プラント等での導入が期待されています。
 
 SPE HATの詳しい内容については弊社Webサイトをご覧ください。  
-https://www.okstech.co.jp/en/products.html
+https://www.okstech.co.jp/products/spe_hat.html
 
 # 変更点
 - SPE HATで不要なFDBハードウェアオフロード部分の削除

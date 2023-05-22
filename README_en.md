@@ -15,7 +15,7 @@ SPE HAT is an expansion board that can turn Raspberry Pi into a single pair Ethe
 10BASE-T1L (IEEE 802.3cg-2019) are new standards to replace conventional field networks such as RS485, enabling all industrial networks to be Ethernetized. The standard transmission distance is 1000m, and it supports a transmission speed of 10Mbps and power supply up to 52W by PoDL(SPoE). It also supports intrinsically safe and is expected to be introduced in plants in the future.
 
 For more information, please visit our website.  
-https://www.okstech.co.jp/en/products.html
+https://www.okstech.co.jp/en/products/spe_hat.html
 
 # Changes
 - Remove FDB offloading.  
