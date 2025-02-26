@@ -31,14 +31,22 @@ https://www.okstech.co.jp/products/spe_hat.html
 Raspberry Pi OS上でのビルドとインストールについて手順を示します。他のLinuxディストリビューションでのビルド、またクロスビルドについては記載していません。
 
 1. カーネルヘッダをインストールします  
+    64bit OSの場合
     ```
-    $ sudo apt install raspberrypi-kernel-headers
+    $ sudo apt install linux-headers-rpi-v8
     ```
-2. リポジトリをクローンします  
+    32bit OSの場合
+    ```
+    $ sudo apt install linux-headers-rpi-{v6,v7,v7l}
+    ```
+    各RaspberryPiにおける32bitカーネルヘッダの対応については下記を参照してください。  
+    https://www.raspberrypi.com/documentation/computers/linux_kernel.html#natively-build-a-kernel
+
+2. リポジトリをクローンします
     ```
     $ git clone https://github.com/OKS-Tech-Japan/spehat_driver.git
     ```
-3. ディレクトリを移動し、mekeします  
+3. ディレクトリを移動し、mekeします
     ```
     $ cd spehat_driver
     $ make
@@ -47,28 +55,28 @@ Raspberry Pi OS上でのビルドとインストールについて手順を示�
     ```
     $ sudo cp adin1110.ko /lib/modules/$(uname -r)/kernel/drivers/net
     ```
-5. カーネルモジュールの依存関係リストを更新します  
+5. カーネルモジュールの依存関係リストを更新します
     ```
     $ sudo depmod -a
     ```
-6. DeviceTree Overlay用のファイルを生成します  
+6. DeviceTree Overlay用のファイルを生成します
     ```
     $ dtc -@ -I dts -O dtb -o adin1110.dtbo dts/bcm2835_adin1110.dtso
     ```
-7. Overlay用ファイルを/boot/overlaysへコピーします  
+7. Overlay用ファイルを/boot/overlaysへコピーします
     ```
     $ sudo cp adin1110.dtbo /boot/overlays
     ```
-8. /boot/config.txtに下記の行を追加します  
+8. /boot/config.txtに下記の行を追加します (最新のRaspberryOSでは/boot/firmware/config.txt)
     ```
     dtoverlay=adin1110
     ```
-9. raspi-configを実行してSPIを有効にします  
+9. raspi-configを実行してSPIを有効にします
     ```
     $ sudo raspi-config
     Interface Options -> SPI
     ```
-10. MACアドレスを再設定します。  
+10. MACアドレスを再設定します
     下記の内容の /etc/systemd/network/00-spe-hat-mac.link を作成します。  
     ```
     [Match]
@@ -77,7 +85,7 @@ Raspberry Pi OS上でのビルドとインストールについて手順を示�
     MACAddress=02:00:00:00:00:01
     ```
 
-    SPE HATにはMACアドレスが存在しません。起動時に設定されるMACアドレスはDeviceTreeで設定されているもので、このアドレスはAnalogDevices社のADIN1110 Wiki記載のものを使用しています。複数のSPE HATを接続する場合は、手動でLAA(Locally Administered Address)を設定してください。LAAはネットワーク管理者が設定するためのアドレスで、ローカルネットワークの環境で使用できます。
+    SPE HATにはMACアドレスが存在しません。起動時に設定されるMACアドレスはDeviceTreeで設定されているもので、このアドレスはAnalogDevices社のADIN1110 Wiki記載のものを使用しています。複数のSPE HATを接続する場合は、手動でLAA(Locally Administered Address)を設定してください。LAAはネットワーク管理者が設定するためのアドレスで、ローカルネットワークの環境で使用できます。  
     
     LAAアドレス範囲は次の通りです。  
     x2‑xx‑xx‑xx‑xx‑xx  
@@ -89,11 +97,11 @@ Raspberry Pi OS上でのビルドとインストールについて手順を示�
     https://wiki.analog.com/resources/tools-software/linux-drivers/net-mac-phy/adin1110
     
 
-11. Raspberry Piを再起動します  
+11. Raspberry Piを再起動します
     ```
     $ sudo reboot
     ```
-12. 起動後、ipコマンドで新しいethXが出来ていることを確認してください。  
+12. 起動後、ipコマンドで新しいethXが出来ていることを確認してください
     ```
     $ ip link show
     1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000

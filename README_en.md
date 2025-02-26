@@ -29,10 +29,18 @@ https://www.okstech.co.jp/en/products/spe_hat.html
 # How to build and install
 Here are the steps for building and installing on Raspberry Pi OS. It does not cover building on other Linux distributions or cross-building.
 
-1. Install kernel headers.
+1. Install kernel headers.  
+    64bit OS
     ```
     $ sudo apt install raspberrypi-kernel-headers
     ```
+    32bit OS
+    ```
+    $ sudo apt install linux-headers-rpi-{v6,v7,v7l}
+    ```
+    Please see below for information on 32-bit kernel header compatibility for each Raspberry Pi.  
+    https://www.raspberrypi.com/documentation/computers/linux_kernel.html#natively-build-a-kernel
+
 2. Clone the repository.
     ```
     $ git clone https://github.com/OKS-Tech-Japan/spehat_driver.git
@@ -58,7 +66,7 @@ Here are the steps for building and installing on Raspberry Pi OS. It does not c
     ```
     $ sudo cp adin1110.dtbo /boot/overlays
     ```
-8. Add the following line to /boot/config.txt.
+8. Add the following line to /boot/config.txt. (In the latest Raspberry OS, /boot/firmware/config.txt.)
     ```
     dtoverlay=adin1110
     ```

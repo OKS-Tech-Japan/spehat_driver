@@ -565,7 +565,9 @@ static int adin1110_register_mdiobus(struct adin1110_priv *priv,
 	mii_bus->priv = priv;
 	mii_bus->parent = dev;
 	mii_bus->phy_mask = ~((u32)GENMASK(2, 0));
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 3, 0)
 	mii_bus->probe_capabilities = MDIOBUS_C22;
+#endif
 	snprintf(mii_bus->id, MII_BUS_ID_SIZE, "%s", dev_name(dev));
 
 	ret = devm_mdiobus_register(dev, mii_bus);
@@ -1145,14 +1147,14 @@ static int adin1110_probe_netdevs(struct adin1110_priv *priv)
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 16, 0)
 		if (!device_get_mac_address(dev, netdev->dev_addr, ETH_ALEN)) {
-			pr_info("MAC addr was not set, use random MAC\n");
+			pr_info("MAC address was not set, use random MAC address.\n");
 			eth_hw_addr_random(netdev);
 		}
 #else
 		if (!device_get_mac_address(dev, mac_addr)) {
 			eth_hw_addr_set(netdev, mac_addr);
 		} else {
-			pr_info("MAC addr was not set, use random MAC\n");
+			pr_info("MAC address was not set, use random MAC address.\n");
 			eth_hw_addr_random(netdev);
 		}
 #endif
